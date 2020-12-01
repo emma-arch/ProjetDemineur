@@ -1,3 +1,5 @@
+from time import time
+
 import random
 import math
 INCONNU = -1
