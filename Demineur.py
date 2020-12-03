@@ -90,12 +90,9 @@ def compte_mine_solution(plateau):
         for y in range(h):
             if plateau[x][y]["etat"] == INCONNU and not plateau[x][y]["mine"]:
                 plateau[x][y]["etat"] = compte_mines_voisines(plateau,x,y)
-    
+    return plateau
 
 
-
-
-"""
 def total_mines(plateau):
     #Compte le nombre total de mines sur le plateau.
     c = 0
@@ -104,19 +101,27 @@ def total_mines(plateau):
             if j['mine'] == True:
                 c +=1
     return c
-print(total_mines(plateau))
-"""
-plateau=genere_plateau(5,5,0.2)
+def check(plateau):
+    c = 0
+    for i in plateau:
+        for j in i:
+            if j['etat'] == -1 or j['etat'] == -3:
+                c += 1
+    return c
+
+plateau=genere_plateau(2,2,0.5)
 
 while True:
     x,y = coup_joueur(plateau)
     if plateau[x][y]["etat"] != DRAPEAU:
         L = case_voisines(plateau,x,y)
         decouvre_case(plateau,x,y)
-compte_mine_solution(plateau)
-
-    
-    
+    if decouvre_case(plateau,x,y) == False:
+        compte_mine_solution(plateau)
+        plateau = genere_plateau(2,2,0.5)
+    if total_mines(plateau) == check(plateau):
+        print("tu as gangné")
+        plateau = genere_plateau(2,2,0.5)
     
     
     
