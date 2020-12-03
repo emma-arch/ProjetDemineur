@@ -111,18 +111,47 @@ def check(plateau):
                 c += 1
     return c
 
-plateau=genere_plateau(2,2,0.5)
+def display(plateau):
+    #permet d'afficher la grille
+    for ligne in plateau:
+        for colonne in ligne:
+            print(colonne['etat'], '  ', end="")
+        print()
+    return None
+
+def write_score(filename, score):
+    with open(filename, mode='a', encoding='utf8') as f:
+        f.write(str(score))
+        f.write('\n')
+
+def read_scores(filename):
+    with open(filename, mode='r', encoding='utf8') as f:
+        scores = f.readlines()
+    return scores
+
+filename = 'scores.txt'
+write_score(filename, 15)
+write_score(filename, 19)
+write_score(filename, 7)
+
+scores = read_scores(filename)
+print(scores)
+
+plateau=genere_plateau(20,30,0.5)
+
+display(plateau)
+
+
 
 while True:
     x,y = coup_joueur(plateau)
     if plateau[x][y]["etat"] != DRAPEAU:
         L = case_voisines(plateau,x,y)
-        decouvre_case(plateau,x,y)
-    if decouvre_case(plateau,x,y) == False: #si on est tombé sur une mine
-        compte_mine_solution(plateau) # on affiche la solution et 
+    if not decouvre_case(plateau,x,y): #si on est tombé sur une mine
+        plateau = compte_mine_solution(plateau) # on affiche la solution et 
         plateau = genere_plateau(2,2,0.5) #on genère un autre plateau
     if total_mines(plateau) == check(plateau):
-        print("tu as gangné")
+        print("tu as gagné")
         plateau = genere_plateau(5,5,0.5)
     
     

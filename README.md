@@ -16,7 +16,7 @@ Les 4 des 13 etats possibles sont modelises par les étiquettes suivantes :
 INCONNU = -1
 PERDU = -2
 DRAPEAU = -3
-QUESTION = -4
+
 
 ### collaboration
 le projet à été mené bien par aina ahmed et emma brillat.
@@ -29,7 +29,7 @@ la fonction `coup-joueur(x,y)` demande au joueur si il veut mettre un drapeau ou
 la fonction `decouvre_case(plateau,x,y)` est a la fois une procédure et une fonction car elle renvoie False si la case contient une mine et True sinon,
  tous ça en changent la variable plateau. En effet si False alors l'état de la case
  devient PERDU et sinon l'état devient égal au nombre de mine qu'il y a autour de la case (grâce à l'execution de la fonction conposante_connexe).
-La fonction `composante_connexe(plateau,x,y)` modifie l'état de la case que l'on découvre et celle de ses voisines si elles ne sont pas découvertent et que la case découverte n'as pas de mine autour d'elle.
+La fonction `composante_connexe(plateau,x,y)` modifie l'état de la case que l'on découvre et celle de ses voisines si elles ne sont inconnues et que la case découverte n'as pas de mine autour d'elle.
 
 idée de se que fait tous notre code
 ---> genere_plateau
