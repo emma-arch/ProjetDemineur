@@ -13,9 +13,9 @@ La case de coordonnée (x,y) est un dictionnaire donc une paire clé valeur.
 
 Les 4 des 13 etats possibles sont modelises par les étiquettes suivantes : 
 
-INCONNU = -1
-PERDU = -2
-DRAPEAU = -3
+INCONNU = _
+PERDU = !
+DRAPEAU = |>
 
 
 ### collaboration

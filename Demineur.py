@@ -1,8 +1,8 @@
 import random
 import math
-INCONNU = -1
-PERDU = -2
-DRAPEAU = -3
+INCONNU = '_'
+PERDU = '!'
+DRAPEAU = '|>'
 
 def genere_plateau(largeur, hauteur, prob_mine): #prob_mine supposer != de 0 et 1
     plateau = []
@@ -35,6 +35,8 @@ def coup_joueur(plateau):
 
 
 def case_voisines(plateau,x,y):
+        if plateau[x][y]["etat"] == DRAPEAU:
+            return
         hauteur = len(plateau)
         largeur = len(plateau[0])
         l = []
@@ -74,7 +76,7 @@ def composante_connexe(plateau,x,y):
    
 def decouvre_case(plateau,x,y):
     "fonction et procédure a la fois car renvoie un booléen et modifie l'argument plateau. renvoie False si la case contenait une mine et True sinon."
-    if plateau[x][y]["mine"] == True:
+    if plateau[x][y]["mine"] == True and plateau[x][y]["etat"] != DRAPEAU:
         plateau[x][y]["etat"] = PERDU
         print("Tu as perdu")
         return False 
@@ -88,8 +90,10 @@ def compte_mine_solution(plateau):
     l = len(plateau[0])
     for x in range(h):
         for y in range(l):
-            if plateau[x][y]["etat"] == INCONNU and not plateau[x][y]["mine"]:
+            if not plateau[x][y]["mine"]:
                 plateau[x][y]["etat"] = compte_mines_voisines(plateau,x,y)
+            else : 
+                plateau[x][y]["etat"] = PERDU
     return plateau
 
 
@@ -119,6 +123,15 @@ def display(plateau):
         print()
     return None
 
+def level(scores):
+    if scores[0] <=  2:
+        plateau = genere_plateau(5,5,0.3)
+    if   3 <= scores <= 5  :
+        plateau = genere_plateau(10,20,0.5)
+    else:
+        plateau = genere_plateau(30,40,0.6)
+    return plateau
+    
 def write_score(filename, score):
     with open(filename, mode='a', encoding='utf8') as f:
         f.write(str(score))
@@ -127,32 +140,30 @@ def write_score(filename, score):
 def read_scores(filename):
     with open(filename, mode='r', encoding='utf8') as f:
         scores = f.readlines()
+
     return scores
 
 filename = 'scores.txt'
-write_score(filename, 15)
-write_score(filename, 19)
-write_score(filename, 7)
+write_score(filename, 0)
 
 scores = read_scores(filename)
+
 print(scores)
-
-plateau=genere_plateau(20,30,0.5)
-
-display(plateau)
-
-
+#3niveau de jeu: Facile, intermédiaire, expert
+plateau=level(scores)
 
 while True:
+    display(plateau)
     x,y = coup_joueur(plateau)
-    if plateau[x][y]["etat"] != DRAPEAU:
-        L = case_voisines(plateau,x,y)
-    if not decouvre_case(plateau,x,y): #si on est tombé sur une mine
-        plateau = compte_mine_solution(plateau) # on affiche la solution et 
-        plateau = genere_plateau(2,2,0.5) #on genère un autre plateau
+    L = case_voisines(plateau,x,y)
+    if not decouvre_case(plateau,x,y):   
+        plateau = compte_mine_solution(plateau)
+        display(plateau)                                                   
+        plateau = genere_plateau(20,30,0.5) 
     if total_mines(plateau) == check(plateau):
         print("tu as gagné")
-        plateau = genere_plateau(5,5,0.5)
+        plateau = genere_plateau(20,30,0.5)
+       
     
     
     
