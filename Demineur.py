@@ -1,9 +1,49 @@
 import random
 import math
+from copy import deepcopy
 INCONNU = '_'
 PERDU = '!'
-DRAPEAU = '|>'
+DRAPEAU = '*'
 
+LEVELS = [(2,2), (16,16), (24,24)]
+MINES = [2, 16, 24]
+
+def genere_plateau_vide(level): #level = 0 ou 1 ou 2
+    x_size, y_size = LEVELS[level]
+    plateau_vide = []
+    for i in range(y_size):
+        plateau_vide.append([])
+        for j in range(x_size): 
+            plateau_vide[i].append({"mine" : False, "etat" : INCONNU}) 
+    return plateau_vide
+
+
+
+def place_mines(plateau, level, alea=True):
+    #plateau_avec_mines = place_mines(plateau, level) # alea=True
+    #plateau_avec_mines = place_mines(plateau, level, alea = False) 
+    n = MINES[level]
+    plateau_avec_mines = deepcopy(plateau)
+    if not alea:
+        # on place les mines sur la diagonale
+        for i in range(n):
+            plateau_avec_mines[i][i]['mine'] = True
+        return plateau_avec_mines
+    # on place les mines de façon aléatoire
+    for ligne in plateau_avec_mines:
+        for colonne in ligne:
+            while n != 0:
+                if random.randint(0,1)==1:
+                    plateau_avec_mines[ligne][colonne]['mine'] = True
+                    n -=1 
+                return plateau_avec_mines
+
+
+def construire_plateau(level, alea = True):
+    plateau_vide = genere_plateau_vide(level)
+    plateau = place_mines(plateau_vide, level, alea)
+    return plateau
+"""
 def genere_plateau(largeur, hauteur, prob_mine): #prob_mine supposer != de 0 et 1
     plateau = []
     c=0
@@ -18,18 +58,18 @@ def genere_plateau(largeur, hauteur, prob_mine): #prob_mine supposer != de 0 et 
                     plateau[i].append({"mine" : False, 
                                         "etat" : INCONNU })
     return plateau
-
+"""
 
 def coup_joueur(plateau):
     #le joueur donne (x,y) ou il met un drapeau
-    x = input("Entre une coordonnées selon la verticale ")
-    y = input("Entre une coordonnées selon l'horizontale ")
-    d = input("Veut tu mettre un DRAPEAU ? ")
-
+    
+    # $ coordonnées ? : 4,5
+    answer = input("coordonnées ? : ")
+    x, y = answer.split(',')
+    d = input("Un DRAPEAU ? ")
     if d == 'oui': 
         plateau[int(x)][int(y)]['etat'] = DRAPEAU
         return (int(x),int(y))
-
     else : 
         return (int(x),int(y))
 
@@ -60,7 +100,6 @@ def compte_mines_voisines(plateau,x,y):
             compt+=1
     return compt
     
-
 def composante_connexe(plateau,x,y):
     # met le plateau à jour en ouvrant toutes les cases vides à partir de la case (x,y)
     #il d'agit d'une procédure, il s'agir d'un bloc d'instructions qui ne renvoie pas de valeur à la fin.
@@ -83,7 +122,6 @@ def decouvre_case(plateau,x,y):
     else :
         composante_connexe(plateau,x,y)
     return True
-
 
 def compte_mine_solution(plateau):
     h = len(plateau)
@@ -111,7 +149,7 @@ def check(plateau):
     c = 0
     for i in plateau:
         for j in i:
-            if j['etat'] == -1 or j['etat'] == -3:
+            if j['etat'] == INCONNU or j['etat'] == DRAPEAU:
                 c += 1
     return c
 
@@ -119,18 +157,9 @@ def display(plateau):
     #permet d'afficher la grille
     for ligne in plateau:
         for colonne in ligne:
-            print(colonne['etat'], '  ', end="")
+            print(colonne['etat'], ' ',end="")
         print()
     return None
-
-def level(scores):
-    if scores[0] <=  2:
-        plateau = genere_plateau(5,5,0.3)
-    if   3 <= scores <= 5  :
-        plateau = genere_plateau(10,20,0.5)
-    else:
-        plateau = genere_plateau(30,40,0.6)
-    return plateau
     
 def write_score(filename, score):
     with open(filename, mode='a', encoding='utf8') as f:
@@ -140,29 +169,31 @@ def write_score(filename, score):
 def read_scores(filename):
     with open(filename, mode='r', encoding='utf8') as f:
         scores = f.readlines()
-
     return scores
 
 filename = 'scores.txt'
-write_score(filename, 0)
 
 scores = read_scores(filename)
 
 print(scores)
-#3niveau de jeu: Facile, intermédiaire, expert
-plateau=level(scores)
+write_score(filename,' ')
 
+#scores est un liste de string comment convertir cela en liste d'entier ?
+#je veux récupérer les données de mon fichier sous forme de lsite d'entier
+   #bonne idée ?
+niv = input("niveau 0/1/2 ?")
+plateau=construire_plateau(int(niv), alea = False)
 while True:
     display(plateau)
     x,y = coup_joueur(plateau)
     L = case_voisines(plateau,x,y)
+    "write_score(filename, 1)  #problème"
     if not decouvre_case(plateau,x,y):   
-        plateau = compte_mine_solution(plateau)
-        display(plateau)                                                   
-        plateau = genere_plateau(20,30,0.5) 
+        plateau = compte_mine_solution(plateau)                                                   
     if total_mines(plateau) == check(plateau):
         print("tu as gagné")
-        plateau = genere_plateau(20,30,0.5)
+        niv = input("niveau 0/1/2 ?")
+        plateau = construire_plateau(int(niv))
        
     
     
