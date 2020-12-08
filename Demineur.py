@@ -105,7 +105,7 @@ def composante_connexe(plateau,x,y):
     #il d'agit d'une procédure, il s'agir d'un bloc d'instructions qui ne renvoie pas de valeur à la fin.
     #ici la variable plateau est modifié.
     if plateau[x][y]['etat'] != INCONNU:
-        return
+       return
     plateau[x][y]["etat"] = compte_mines_voisines(plateau, x, y)
     if plateau[x][y]['etat'] > 0:
         return
@@ -176,24 +176,27 @@ filename = 'scores.txt'
 scores = read_scores(filename)
 
 print(scores)
-write_score(filename,' ')
+write_score(filename,0)
 
-#scores est un liste de string comment convertir cela en liste d'entier ?
-#je veux récupérer les données de mon fichier sous forme de lsite d'entier
-   #bonne idée ?
-niv = input("niveau 0/1/2 ?")
+
+niv = input("Niveau 0/1/2 ? : ")
 plateau=construire_plateau(int(niv), alea = False)
 while True:
     display(plateau)
     x,y = coup_joueur(plateau)
     L = case_voisines(plateau,x,y)
-    "write_score(filename, 1)  #problème"
     if not decouvre_case(plateau,x,y):   
-        plateau = compte_mine_solution(plateau)                                                   
+        plateau = compte_mine_solution(plateau)
+        niv = input("Niveau 0/1/2 ? : ")
+        plateau = construire_plateau(int(niv), alea = False)                                                   
     if total_mines(plateau) == check(plateau):
-        print("tu as gagné")
-        niv = input("niveau 0/1/2 ?")
-        plateau = construire_plateau(int(niv))
+        print("Tu as gagné")
+        write_score(filename, int(scores[-1]) + 1)
+        scores = read_scores(filename)
+        print(scores)
+        niv = input("Niveau 0/1/2 ? : ")
+
+        plateau = construire_plateau(int(niv), alea = False)
        
     
     
